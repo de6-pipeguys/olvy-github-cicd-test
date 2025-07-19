@@ -1,0 +1,20 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ["ubuntu-24.04"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ec2-user/myapp
+            git pull origin main
+            pip install -r requirements.txt
+            systemctl restart myapp.service
